@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import pyodbc
+from typing import List, Dict
 
 # Database setup
 DATABASE_CONNECTION_STRING = (
@@ -21,7 +22,7 @@ def insertRows(data: dict):
     cursor = connection.cursor()
     try:
         sql = '''
-            INSERT INTO DatosExperimento (CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
+            INSERT INTO DatosCorregidos (CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         '''
         cursor.execute(sql, (
@@ -39,7 +40,7 @@ def insertRows(data: dict):
     return {"status": "success", "message": "Row inserted successfully"}
 
 # Function to execute a SELECT query
-def get_experiment_data():
+def get_experiment_data() -> List[Dict]:
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM DatosExperimento")
     rows = cursor.fetchall()
