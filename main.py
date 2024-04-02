@@ -22,10 +22,14 @@ def insertRows(data: dict):
     cursor = connection.cursor()
     try:
         sql = '''
-            INSERT INTO DatosCorregidos (CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
+            INSERT INTO segundaIteracion (ID, gender, age, visionImpediment,CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         '''
         cursor.execute(sql, (
+            data['ID'],
+            data['gender'],
+            data['age'],
+            data['visionImpediment'],
             data['CONDITION_A'],
             data['CONDITION_B'],
             data['GRAPH'],
@@ -38,6 +42,33 @@ def insertRows(data: dict):
     finally:
         cursor.close()
     return {"status": "success", "message": "Row inserted successfully"}
+
+def insertUser(data: dict):
+    cursor = connection.cursor()
+    try:
+        sql = '''
+            INSERT INTO caracterizacion (ID, gender, age, visionImpediment)
+            VALUES (?, ?, ?, ?)
+        '''
+        cursor.execute(sql, (
+            data['ID'],
+            data['gender'],
+            data['age'],
+            data['visionImpediment']
+        ))
+        cursor.commit()
+    finally:
+        cursor.close()
+    return {"status": "success", "message": "Row inserted successfully"}
+
+def getLatestUser():
+    cursor = connection.cursor()
+    cursor.execute("SELECT MAX(id) FROM your_table_name")
+    latest_id = cursor.fetchone()[0]
+    cursor.close()
+    connection.close()
+
+    return latest_id
 
 # Function to execute a SELECT query
 def get_experiment_data() -> List[Dict]:
@@ -52,9 +83,14 @@ def get_experiment_data() -> List[Dict]:
 async def insert_experiment_data(data: dict):
     return insertRows(data)
 
-@app.get("/experiment_data/")
-async def get_experiment_data_endpoint():
-    return get_experiment_data()
+@app.post("/insertUser/")
+async def insert_user_data(data: dict):
+    return insertUser(data)
+
+@app.get("/getLatestUser/")
+async def getLatest(data: dict):
+    return getLatestUser(data)
+
 
 @app.get("/")
 async def read_root():
