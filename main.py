@@ -54,8 +54,10 @@ def insertUser(data: dict):
         ))
         cursor.commit()
     finally:
-        cursor.close()
+        cursor.close()  # Close the cursor
+        connection.close()  # Close the connection
     return {"status": "success", "message": "Row inserted successfully"}
+
 
 def getLatestUser():
     cursor = connection.cursor()
