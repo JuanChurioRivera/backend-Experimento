@@ -22,14 +22,10 @@ def insertRows(data: dict):
     cursor = connection.cursor()
     try:
         sql = '''
-            INSERT INTO segundaIteracion (ID, gender, age, visionImpediment,CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
+            INSERT INTO segundaIteracion (CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         '''
         cursor.execute(sql, (
-            data['ID'],
-            data['gender'],
-            data['age'],
-            data['visionImpediment'],
             data['CONDITION_A'],
             data['CONDITION_B'],
             data['GRAPH'],
@@ -63,7 +59,7 @@ def insertUser(data: dict):
 
 def getLatestUser():
     cursor = connection.cursor()
-    cursor.execute("SELECT MAX(id) FROM your_table_name")
+    cursor.execute("SELECT MAX(id) FROM caracterizacion")
     latest_id = cursor.fetchone()[0]
     cursor.close()
     connection.close()
@@ -88,9 +84,12 @@ async def insert_user_data(data: dict):
     return insertUser(data)
 
 @app.get("/getLatestUser/")
-async def getLatest(data: dict):
-    return getLatestUser(data)
+async def getLatest():
+    return getLatestUser()
 
+@app.get("/experiment_data/")
+async def get_experiment_data_endpoint():
+    return get_experiment_data()
 
 @app.get("/")
 async def read_root():
