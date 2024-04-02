@@ -22,10 +22,14 @@ def insertRows(data: dict):
     cursor = connection.cursor()
     try:
         sql = '''
-            INSERT INTO segundaIteracion (CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO segundaIteracion (ID,gender,age,visionImpediment,CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
+            VALUES (?,?,?,?,?, ?, ?, ?, ?, ?, ?)
         '''
         cursor.execute(sql, (
+            data['ID'],
+            data['gender'],
+            data['age'],
+            data['visionImpediment'],
             data['CONDITION_A'],
             data['CONDITION_B'],
             data['GRAPH'],
