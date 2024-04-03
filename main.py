@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import pyodbc
 from typing import List, Dict
 
@@ -13,14 +13,17 @@ DATABASE_CONNECTION_STRING = (
     "TrustServerCertificate=no;"
     "Connection Timeout=30;"
 )
-connection = pyodbc.connect(DATABASE_CONNECTION_STRING)
 
 # FastAPI app instance
 app = FastAPI()
 
+def get_connection():
+    return pyodbc.connect(DATABASE_CONNECTION_STRING)
+
 def insertRows(data: dict):
-    cursor = connection.cursor()
     try:
+        connection = get_connection()
+        cursor = connection.cursor()
         sql = '''
             INSERT INTO segundaIteracion (ID,gender,age,visionImpediment,CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
             VALUES (?,?,?,?,?, ?, ?, ?, ?, ?, ?)
@@ -41,11 +44,13 @@ def insertRows(data: dict):
         cursor.commit()
     finally:
         cursor.close()
+        connection.close()
     return {"status": "success", "message": "Row inserted successfully"}
 
 def insertUser(data: dict):
-    cursor = connection.cursor()
     try:
+        connection = get_connection()
+        cursor = connection.cursor()
         sql = '''
             INSERT INTO caracterizacion (ID, gender, age, visionImpediment)
             VALUES (?, ?, ?, ?)
@@ -64,22 +69,28 @@ def insertUser(data: dict):
 
 
 def getLatestUser():
-    cursor = connection.cursor()
-    cursor.execute("SELECT MAX(id) FROM caracterizacion")
-    latest_id = cursor.fetchone()[0]
-    cursor.close()
-    connection.close()
-
-    return latest_id
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT MAX(id) FROM caracterizacion")
+        latest_id = cursor.fetchone()[0]
+        return latest_id
+    finally:
+        cursor.close()
+        connection.close()
 
 # Function to execute a SELECT query
 def get_experiment_data() -> List[Dict]:
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM DatosExperimento")
-    rows = cursor.fetchall()
-    columns = [column[0] for column in cursor.description]  # Extract column names
-    cursor.close()
-    return [dict(zip(columns, row)) for row in rows]
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM DatosExperimento")
+        rows = cursor.fetchall()
+        columns = [column[0] for column in cursor.description]  # Extract column names
+        return [dict(zip(columns, row)) for row in rows]
+    finally:
+        cursor.close()
+        connection.close()
 
 @app.post("/insertRows/")
 async def insert_experiment_data(data: dict):
