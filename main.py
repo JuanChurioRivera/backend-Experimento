@@ -25,21 +25,18 @@ def insertRows(data: dict):
         connection = get_connection()
         cursor = connection.cursor()
         sql = '''
-            INSERT INTO segundaIteracion (ID,gender,age,visionImpediment,CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition, timePer)
-            VALUES (?,?,?,?,?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO segundaIteracion (ID,CONDITION_A, CONDITION_B, GRAPH, timeTaken, Error, controlCondition)
+            VALUES (?,?, ?, ?, ?, ?, ?)
         '''
         cursor.execute(sql, (
             data['ID'],
-            data['gender'],
-            data['age'],
-            data['visionImpediment'],
             data['CONDITION_A'],
             data['CONDITION_B'],
             data['GRAPH'],
             data['timeTaken'],
             data['Error'],
-            data['controlCondition'],
-            data['timePer']
+            data['controlCondition']
+   
         ))
         cursor.commit()
     finally:
@@ -52,14 +49,16 @@ def insertUser(data: dict):
         connection = get_connection()
         cursor = connection.cursor()
         sql = '''
-            INSERT INTO caracterizacion (ID, gender, age, visionImpediment)
+            INSERT INTO caracterizacion (ID, gender, age,email, visionImpediment,condition)
             VALUES (?, ?, ?, ?)
         '''
         cursor.execute(sql, (
             data['ID'],
             data['gender'],
             data['age'],
-            data['visionImpediment']
+            data['email'],
+            data['visionImpediment'],
+            data['condition']
         ))
         cursor.commit()
     finally:
