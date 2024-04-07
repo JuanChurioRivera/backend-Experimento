@@ -50,7 +50,7 @@ def insertUser(data: dict):
         cursor = connection.cursor()
         sql = '''
             INSERT INTO caracterizacion (ID, gender, age,email, visionImpediment,condition)
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?,?,?)
         '''
         cursor.execute(sql, (
             data['ID'],
